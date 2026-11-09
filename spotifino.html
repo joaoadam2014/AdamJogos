@@ -1,0 +1,206 @@
+<html lang="pt-br">
+    <head>
+        <style>
+            .ondas{
+                background: red;
+                position: fixed;
+                z-index: 2000;
+            }
+            button{
+                scale: 1.75;
+                z-index: 2000;
+            }
+            footer{
+                position: absolute;
+                bottom:0%;
+                scale: 0.75;
+                max-height: 500px;
+                z-index: 0;
+            }
+            .abaixo{
+                display: list-item;
+            }
+            img{
+                scale: 0.9;
+            }
+            nav{
+                z-index: 2000;
+                position: fixed;
+            }
+            b{
+                z-index: 2009;
+                scale: 2;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let musicaAtual=[]
+            let primeiraNota=32
+            let ritmo=50
+            let sentido=3//fala o quanto de notas de nota pra nota que pode variar
+            let sentidoMaximo=10// a palavra coco, nunca coloque um acento no ultimo o
+            let beeps=["bgm/beep.mp3","bgm/beep2.mp3","bgm/beep3.mp3"]
+            let beepIndex=0
+            window.setInterval(() => {
+                let sound=new Audio(beeps[beepIndex])
+                let sound2=new Audio(beeps[beepIndex])
+                let VariacaoAtual=Math.floor(Math.random()*sentido)+1
+                let boleano01=Math.floor(Math.random()*2)
+                let AddSub=false
+                if(primeiraNota<=5){
+                    primeiraNota=primeiraNota+11
+                }
+                if (primeiraNota>=60){
+                    primeiraNota=primeiraNota-10
+                }
+                if (boleano01==1){
+                    AddSub=true
+                }else{
+                    AddSub=false
+                }
+                musicaAtual.push(primeiraNota)
+                if(AddSub==true){
+                    primeiraNota=primeiraNota+VariacaoAtual
+                }else{
+                    primeiraNota=primeiraNota-VariacaoAtual
+                }
+                sound.playbackRate=primeiraNota/10
+                sound.currentTime=0
+                sound.preservesPitch=false
+                sound.volume=0.1
+                sound.play()
+                sound2.playbackRate=primeiraNota/20
+                sound2.currentTime=0
+                sound2.preservesPitch=false
+                sound2.volume=0.1
+                sound2.play()
+                document.getElementById("barra1").style.height=primeiraNota*5
+                document.getElementById("barra2").style.height=musicaAtual[musicaAtual.length-1]*5// o vezes cinco e para a barra serr visivel
+                document.getElementById("barra3").style.height=musicaAtual[musicaAtual.length-2]*5
+                document.getElementById("barra4").style.height=musicaAtual[musicaAtual.length-3]*5
+                document.getElementById("barra5").style.height=musicaAtual[musicaAtual.length-4]*5
+                document.getElementById("barra6").style.height=musicaAtual[musicaAtual.length-5]*5
+                document.getElementById("barra7").style.height=musicaAtual[musicaAtual.length-6]*5
+                if (musicaAtual.length>7){
+                    musicaAtual.shift()//Para evitar que o fulano ciclano Zezinho da silva fique duas horas ouvindo a musica e a memoria ram encha e crasha tudo 
+                }
+            }, ritmo);
+            window.setInterval(()=>{
+                sentido=Math.floor(Math.random()*sentidoMaximo)+1// para mudar o sentido da musica
+            },1000)
+            function beep1(){
+                beepIndex=0
+            }
+            function beep2(){
+                beepIndex=1
+            }
+            function beep3(){
+                beepIndex=2
+            }
+            function ritmar(r){
+                ritmo=r
+            }
+            function addLinha(){
+                let random1=String(Math.floor(Math.random()*360))+"deg"
+                let random2=String(Math.floor(Math.random()*360))+"deg"
+                let random3=String(Math.floor(Math.random()*360))+"deg"
+                let random4=String(Math.floor(Math.random()*360))+"deg"
+                let text1=["a Melancolia "," as Virtudes "," as Benevolencias "," o Flagelo "," as Vantagems "," as Desvantagems "," o Coitado ","O ferrado ","O crime "," A vergonha "]
+                let text2=["do nordestino ","do bahiano ","do povo ","dos cara ","dos mano ","dos arrogantes ","dos sensatos ","dos sabios"]
+                let text3=[" é nenhuma"," é a fome"," é a rebelião"," é a revolta"," é a tristeza"," é a felicidade","",""]
+                let titulo1=text1[Math.floor(Math.random()*text1.length)]+text2[Math.floor(Math.random()*text2.length)]+text3[Math.floor(Math.random()*text3.length)]
+                let titulo2=text1[Math.floor(Math.random()*text1.length)]+text2[Math.floor(Math.random()*text2.length)]+text3[Math.floor(Math.random()*text3.length)]
+                let titulo3=text1[Math.floor(Math.random()*text1.length)]+text2[Math.floor(Math.random()*text2.length)]+text3[Math.floor(Math.random()*text3.length)]
+                let titulo4=text1[Math.floor(Math.random()*text1.length)]+text2[Math.floor(Math.random()*text2.length)]+text3[Math.floor(Math.random()*text3.length)]
+                let linha='<tr><b style="font-size:larger;">---------------</b><br><br><tr><b style="font-size:larger;">---------------</b><br><br><tr><b style="font-size:larger;">-------------------------------</b></tr></tr></tr><tr><td><p></p></td><td><button class="abaixo"onclick="randomizarTudo()"><b>'+titulo1+'</b><img src="imgs/backgroundSpotifino1.png" width="200px" style="filter: hue-rotate('+random1+');"></img></button></td><td><p>-------------------------------------------------------------------------</p></td><td><button class="abaixo"onclick="randomizarTudo()"><b>'+titulo3+'</b><img src="imgs/backgroundSpotifino1.png" width="200px" style="filter: hue-rotate('+random2+'deg);"></img></button></td><td><p>-------------------------------------------------------------------------</p></td><td><button class="abaixo"onclick="randomizarTudo()"><b>'+titulo2+'</b><img src="imgs/backgroundSpotifino1.png" width="200px" style="filter: hue-rotate('+random3+');"></img></button></td><td><p>-------------------------------------------------------------------------</p></td><td><button class="abaixo"onclick="randomizarTudo()"><b>'+titulo4+'</b><img src="imgs/backgroundSpotifino1.png" width="200px" style="filter: hue-rotate('+random4+');"></img></button></td></tr><br><br>'
+                document.querySelector("table").innerHTML=document.querySelector("table").innerHTML+linha
+            }
+            window.setInterval(()=>{
+                document.querySelector("table").innerHTML=""
+            },5000)
+            window.setInterval(()=>{
+                addLinha()
+                addLinha()
+                addLinha()
+                addLinha()
+                addLinha()
+                addLinha()
+            },5000)
+            function randomizarTudo(){
+                sentidoMaximo=Math.floor(Math.random()*25)+1
+                beepIndex=Math.floor(Math.random()*3)
+                primeiraNota=Math.floor(Math.random()*60)
+                musicaAtual=[]
+            }
+            function espacar(e){
+                sentidoMaximo=e
+            }
+        </script>
+        <div style="width:100px;position: fixed;left: 60%;bottom:50%"id="barra1" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 55%;bottom:50%"id="barra2" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 50%;bottom:50%"id="barra3" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 45%;bottom:50%"id="barra4" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 40%;bottom:50%"id="barra5" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 35%;bottom:50%"id="barra6" class="ondas"></div>
+        <div style="width:100px;position: fixed;left: 30%;bottom:50%"id="barra7" class="ondas"></div>
+        <nav>
+            <h1>timbre:</h1>
+            <li>
+                <button onclick="beep1()">magico</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="beep2()">acelerado</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="beep3()">suave</button>
+            </li>
+        </nav>
+        <nav style="top:220px;">
+            <h1>ritmo:</h1>
+            <li>
+                <button onclick="ritmar(50)">1/20 de tempo</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="ritmar(250)">1/4 de tempo</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="ritmar(1000)">1/1 de tempo</button>
+            </li>
+        </nav>
+        <nav style="top:440px;">
+            <h1>variedade:</h1>
+            <li>
+                <button onclick="espacar(1)"> 1, suave como vento</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="espacar(10)"> 10, padrão</button>
+            </li>
+            <br>
+            <br>
+            <li>
+                <button onclick="espacar(40)"> 40, caótico</button>
+            </li>
+        </nav>
+        <footer style="border:1px solid #333; z-index: 0;" >
+            <table style="border: 1px solid #333;">
+                <tr>
+                    <br>
+                </tr>
+                <tr>
+                    <br>
+                </tr>
+            </table>
+        </footer>
+    </body>
+</html>

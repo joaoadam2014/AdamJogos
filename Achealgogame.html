@@ -1,0 +1,109 @@
+<html>
+    <head>
+        <style>
+            #correrContainer{
+                background-image: url("imgs/encontreAlgo.png");
+                background-size: 500%;
+                height: 250px;
+                width: 500px;
+                scale: 3;
+                position: fixed;
+                left: 700px;
+                top:300px;
+            }
+            button{
+                scale: 3;
+            }
+            h1{
+                scale: 3;
+                left: 300px;
+                color: blue;
+            }
+            h2{
+                scale: 3;
+                left: 400px;
+                color: yellow;
+            }
+            body{
+                background-image: url(imgs/background.png);
+                background-size: 50%;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let currentfase=0
+            let velocidade=0.1
+            let dinheiro=localStorage.getItem("dinheiro")
+            if (dinheiro==null){
+                localStorage.setItem("dinheiro", 0)
+            }
+            function addCoin(limite){
+                let randomCoins=Math.floor(Math.random()*Number(limite))
+                localStorage.setItem("dinheiro",String(Number(dinheiro)+randomCoins))
+                dinheiro=localStorage.getItem("dinheiro")
+            }
+            window.setInterval(()=>{
+                document.getElementById("correrContainer").style.backgroundPositionX=String(currentfase/5)+"%"
+                currentfase=currentfase+velocidade
+                document.querySelector("h1").innerHTML="velocidade: "+String(velocidade)+" km/h"
+            },50)
+            function velocit005(){
+                velocidade=velocidade+0.05
+                document.querySelectorAll("button")[0].style.visibility="hidden"
+                window.setTimeout(()=>{
+                    document.querySelectorAll("button")[0].style.visibility="visible"
+                },2000)
+            }
+            function velocit1(){
+                if (velocidade>=1){
+                    velocidade=velocidade+1
+                }
+                addCoin(5)
+                document.querySelectorAll("button")[1].style.visibility="hidden"
+                window.setTimeout(()=>{
+                    document.querySelectorAll("button")[1].style.visibility="visible"
+                },2000)
+            }
+            function velocit10(){
+                addCoin(40)
+                if (velocidade>=10){
+                    velocidade=velocidade+10
+                }
+                document.querySelectorAll("button")[2].style.visibility="hidden"
+                window.setTimeout(()=>{
+                    document.querySelectorAll("button")[2].style.visibility="visible"
+                },2000)
+            }
+            window.setInterval(()=>{
+                document.querySelector("h2").innerHTML="$: "+String(dinheiro)
+            },1)
+            window.setInterval(()=>{
+                let posicao=document.body.style.backgroundPositionX.split("px")[0]//O CEUUUU VAI SE MOVER PQ SIM E E BONITO
+                document.body.style.backgroundPositionX=String(Number(posicao)+2)+"px"
+                if(Number(posicao)>=2000){
+                    document.body.style.backgroundPositionX="0px"
+                }
+            },100)
+        </script>
+        <div id="correrContainer">
+
+        </div>
+        <br>
+        <nav style="position: fixed;left: 100px;"">
+            <li>
+                <button onclick="velocit005()">+ 0.05km/h</button>
+            </li>
+            <li></li><li><p>precisa de 1km/h+ para desbloquear o proximo botao</p></li><li></li>
+            <li>
+                <button onclick="velocit1()">+ 1km/h </button>
+            </li>
+            <li></li><li><p>precisa de 10km/h+ para desbloquear o proximo botao</p></li><li></li>
+            <li>
+                <button onclick="velocit10()">+ 10km/h</button>
+            </li>
+        </nav>
+        <h1 style="position: fixed;bottom: 100px;">velocidade:</h1>
+        <h2 style="position: fixed;top: 0px;">$:</h2>
+    </body>
+</html>

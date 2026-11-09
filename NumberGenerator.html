@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <style>
+            .HorizontalAlign{
+                left: 25%;
+                position: fixed;
+            }
+            img{
+                image-rendering: pixelated;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let numero=24
+            function conversaoEm4Digitos(){
+                let numeroString=String(numero)
+                let caracteres=numeroString.split("")
+                let tamanhos=["0","00","000","0000"]
+                let tamanho=caracteres.length
+                let largura=4
+                if (tamanho<largura){
+                    let diferenca=largura-tamanho
+                    let zerosABotar=tamanhos[diferenca-1]
+                    numeroString=zerosABotar+numeroString//compensa, se for 32 vai virar 0032 isso deixa tudo com 4 digitos, se for 54432 vai virar 5443
+                }
+                if (tamanho>largura){
+                    numeroString=numeroString.slice(0,largura)//o cara vai querer travar tanto de digito dai eu botei isso
+                }
+                return numeroString
+            }
+            function atualizarNumero(){
+                let valor=document.querySelector("input").value
+                numero=Number(valor)
+                document.getElementById("painel").innerHTML=""
+            }
+            function numeroParaImagem(){
+                atualizarNumero()
+                let numerico="0"
+                if (String(numero).split("").includes("-")){
+                    numero=Number(String(numero).split("-")[1])
+                }
+                numerico=conversaoEm4Digitos(numero)
+                let digitos=numerico.split("")
+                digitos.forEach((digito)=>{
+                    let imagem="imgs/"+digito+".png"
+                    let imagemString="<img src='"+imagem+"'style='width:25%;height:100%;'></img>"
+                    document.getElementById("painel").innerHTML=document.getElementById("painel").innerHTML+imagemString
+                })
+            }
+            window.setTimeout(()=>{
+                numeroParaImagem()
+            },1000)
+        </script>
+        <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <div id="painel"class="HorizontalAlign" style="height:250px;width:500px;border:3px solid #333;">
+
+        </div>
+        <button onclick="numeroParaImagem()">
+            <b>Gerar codigo adamBC</b>
+        </button>
+        <br>
+        <b>Numero:</b><br>
+        <input type="number"></input>
+
+    </body>
+</html>

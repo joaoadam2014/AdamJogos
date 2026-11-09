@@ -1,0 +1,251 @@
+<html>
+    <head>
+        <style>
+            .sphere{
+                background-image: url("imgs/texturaEsfera3.png");
+                background-repeat: repeat;
+                background-size: 100%;
+                position: fixed;
+                border-radius: 200px;
+                scale: 2;
+                opacity: 1;
+                z-index: 2000;
+                  box-shadow: 
+    inset -10px -10px 20px rgba(0, 0, 0, 0.895),
+    inset 5px 5px 15px rgba(255, 255, 255, 0.82),
+    10px 15px 5px rgba(0, 0, 0, 0.597);
+            }
+            body{
+                background-image: url("imgs/azulejo.png");
+                background-size: 50%;
+            }
+            #portas{
+                width: 1920px;
+                height: 1080px;
+                position: fixed;
+            }
+            @keyframes passando{
+                from{
+                    right:-2500px;
+                }
+                to{ right:4500px;}
+            }
+            #pessoas{
+                visibility: hidden;
+            }
+            .passa{
+                animation:passando 18s linear infinite;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let mousePos=[0,0]
+            let velocidades=[0,0,0,0]
+            let paredeEsquerda=450
+            let fase=0
+            let passaFaseb=false
+            let impacto=new Audio("bgm/impacto.mp3")
+            let impacto2=new Audio("bgm/impacto.mp3")
+            let impacto3=new Audio("bgm/impacto.mp3")
+            let velocidadePadrao=3
+            let audio1Played=false
+            impacto3.playbackRate=2
+            impacto3.volume=0.6
+            let rolando=new Audio("bgm/rolando.mp3")
+            let rolando2=new Audio("bgm/rolando.mp3")
+            let cartaLer=false
+            let raios=[100,100,200,300,50]
+            let hitboxes=true
+            window.setInterval(()=>{
+                let esferas=document.querySelectorAll("div")
+                let esferaCount=0
+                esferas.forEach(esfera => {
+                    let velocidadeX=velocidades[esferaCount]
+                    let velocidadeY=velocidades[esferaCount+1]
+                    esfera.style.backgroundPositionX=esfera.style.left//seriao mano eu demorei para prensar nisso
+                    esfera.style.backgroundPositionY=esfera.style.top// isso causa a sencacao de 3d vei, fica mt realista
+                    esfera.style.borderRadius=esfera.style.width//UMA BOLA E REDONDA E NAO QUADRADA KIKO
+                    esfera.style.width=String(raios[esferaCount]/2)+"px"
+                    esfera.style.height=String(raios[esferaCount]/2)+"px"
+                    esfera.style.top=String(Number(esfera.style.top.split("px")[0])+velocidadeX)+"px"
+                    esfera.style.left=String(Number(esfera.style.left.split("px")[0])+velocidadeY)+"px"
+                    let x=Number(String(esfera.style.left.split("px")[0]))
+                    let y=Number(String(esfera.style.top.split("px")[0]))
+                    if (x<=400 && hitboxes==true){
+                        esfera.style.left="500px"//HIT BOX PRA N ATRAVESSAR A PAREDE E QUEBRAR LEIS DA FISICAAASDFADSGSDBFVRG
+                        velocidades[0]=0
+                        velocidades[1]=10//INCLUSIVE A BOLA REBATE NAS PAREDESSSSS
+                        velocidades[2]=0
+                        impacto3.play()
+                    }
+                    if (x>=1460  && hitboxes==true){
+                        esfera.style.left="1400px"
+                        velocidades[0]=0
+                        velocidades[1]=-10
+                        velocidades[2]=0
+                        impacto3.play()
+                    }
+                    if (y<=123  && hitboxes==true){
+                        esfera.style.top="150px"
+                        velocidades[0]=10
+                        velocidades[1]=0
+                        velocidades[2]=0
+                        impacto3.play()
+                    }
+                    if (y>=893  && hitboxes==true){
+                        esfera.style.top="850px"
+                        velocidades[0]=-10
+                        velocidades[1]=0
+                        velocidades[2]=0
+                        impacto3.play()
+                    }
+                    if(y<500 && x>1079 && x<1600){
+
+                        if (hitboxes==true){
+                            console.log("carta")
+                            document.getElementById("carta").src="imgs/cartaInteract.png"
+                            cartaLer=true
+                        }
+                    }else{
+                        document.getElementById("carta").src="imgs/carta.png"
+                        cartaLer=false
+                         if (hitboxes==false){
+                        document.getElementById("carta").style.visibility=="hidden"
+                        }
+                    }
+                });
+            },50)
+            let esferas2=document.querySelectorAll("div")
+            window.setTimeout(()=>{
+                esferas2.forEach(esfera => {
+                    esfera.style.filter="hue-rotate(180deg)"
+                })
+            },1000)
+            window.setInterval(()=>{
+                document.body.style.backdropFilter="hue-rotate("+String((fase*100)+180)+"deg) saturate(0.35)"
+                document.getElementById("portas").style.filter="hue-rotate("+String((fase*100)+180)+"deg)"
+                if(velocidades[0]>=7 || velocidades[1]>=7 || velocidades[0]<-7 || velocidades[1]<-7){
+                    rolando.volume=0.4
+                    rolando.play()
+                }
+            },1000)
+            window.setInterval(()=>{
+                passaFase()
+            },16000)
+            document.addEventListener("mousemove",(mouse)=>{
+               // mousePos[0]=mouse.pageX
+                //mousePos[1]=mouse.pageY
+                //console.log(window.screen.width)
+                //console.log(window.screen.height)// isso e depuracao
+
+            })
+            function passaFase(){
+                fase=fase+1
+                document.getElementById("portas").src="imgs/PortaAbre.gif"// A PORTA TEM QUE ABRIR
+                impacto.play()
+                intervaloo=window.setInterval(()=>{
+                    impacto2.play()
+                    impacto.play()
+                },400)
+                window.setTimeout(()=>{
+                    document.getElementById("portas").src="imgs/PortaNeutra.gif"
+                    impacto2.play()
+                    clearInterval(intervaloo)
+                },3000)
+                 
+            }
+            document.addEventListener("keydown",(e)=>{
+                if (audio1Played==false){
+                    let fala1=new Audio("bgm/falaSinuca1.mp3")// uma fala de 15 segundos falando sobre seu emprego de ser uma bola de sinuca
+                    document.body.click()
+                    fala1.play()
+                    audio1Played=true
+                }
+                if (e.keyCode==65){//A BOLA TEM QUE ROLAR
+                    velocidades[1]=velocidadePadrao*-1
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]+(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]+(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]+(velocidadePadrao/3)
+                    },1000)
+                }
+                if (e.keyCode==68){
+                    velocidades[1]=velocidadePadrao
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]-(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]-(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[1]=velocidades[1]-(velocidadePadrao/3)
+                    },1000)
+                }
+                if (e.keyCode==87){
+                    velocidades[0]=velocidadePadrao*-1
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]+(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]+(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]+(velocidadePadrao/3)
+                    },1000)
+                }
+                if (e.keyCode==83){
+                    velocidades[0]=velocidadePadrao
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]-(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]-(velocidadePadrao/3)
+                    },1000)
+                    window.setTimeout(()=>{
+                        velocidades[0]=velocidades[0]-(velocidadePadrao/3)
+                    },1000)
+                }
+                if (e.keyCode==69   && cartaLer==true && hitboxes==true){
+                    if(document.getElementById("cartaMenu").style.visibility=="visible"){
+                        document.getElementById("cartaMenu").style.visibility="hidden"
+                    }else{
+                        document.getElementById("cartaMenu").style.visibility="visible"
+                    }
+                }
+                if (e.keyCode==69 && cartaLer==false){
+                    document.getElementById("cartaMenu").style.visibility="hidden"
+                }
+                }
+            )
+            window.setTimeout(()=>{
+                let fala2=new Audio("bgm/falaSinuca2.mp3")// uma fala de 15 segundos falando sobre seu emprego de ser uma bola de sinuca
+                fala2.play()
+            },19000)
+            window.setTimeout(()=>{
+                document.getElementById("pessoas").style.visibility="visible"
+                raios[0]=25
+                hitboxes=false
+               // document.getElementById("portas").src=""
+                document.getElementById("portas").style.scale=0.1
+                document.getElementById("portas").style.left="0px"
+                document.getElementById("portas").style.top="0px"
+                velocidadePadrao=0.75
+                document.getElementById("bola").style.filter="brightness(3.5) saturate(5)"
+                document.body.style.backgroundImage="url('imgs/grama.png')"
+            },35000)
+        </script>
+        <div class="sphere",style="left:100px;top:500px;"id="bola">
+
+        </div>
+        <img src="imgs/PortaNeutra.gif" id="portas"></img>
+        <img src="imgs/carta.png" style="position: fixed;left:1275px;top:260px;z-index: 1900;" id="carta">
+        <img src="imgs/cartaMenu.png" style="position: fixed;z-index: 9000;visibility: hidden;" id="cartaMenu"></img>
+        <img src="imgs/personagems.png" style="position: fixed; scale: 1.5;right: 500px;top:-25%;z-index: 3000;" id="pessoas" class="passa"></img>
+        <img src="imgs/nameBanheiroBg.png" style="position: fixed;top: -89%;scale: 2;visibility: hidden;"id="bgbg"></img>
+    </body>
+</html>

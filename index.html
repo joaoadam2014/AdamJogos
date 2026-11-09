@@ -1,0 +1,74 @@
+<html>
+    <head>
+        <style>
+            body{
+                background-image: url("imgs/background.png");
+                background-size: 50%;
+            }
+            h1{
+              font-size: xx-large;
+              color: blue;
+              z-index: 2000;
+            }
+            #games{
+                border: 1px solid #333;
+                width: 90%;
+                max-height: 500%;
+                min-height: 1000px;
+                top:5%;
+            }
+            .cell{
+                display: table-cell;
+                width: 250px;
+                height: 250px;
+            }
+            a{
+                border: 8px solid blue;
+                border-radius: 40px;
+                scale: 1.5;
+            }
+            a:hover{
+                scale: 1.25;
+            }
+            img{
+                border-radius: 40px;
+            }
+        </style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let controle=false
+            window.setInterval(()=>{
+                let posicao=document.body.style.backgroundPositionX.split("px")[0]//O CEUUUU VAI SE MOVER PQ SIM E E BONITO
+                document.body.style.backgroundPositionX=String(Number(posicao)+2)+"px"
+                if(Number(posicao)>=2000){
+                    document.body.style.backgroundPositionX="0px"
+                }
+            },100)
+            window.addEventListener("mousemove",(mouse)=>{
+                let elemento=mouse.target
+                if (elemento.tagName=="IMG" && controle==false){
+                    controle=true
+                    window.setTimeout(()=>{
+                        let audio=new Audio("bgm/buttonsound.mp3")
+                        audio.play()
+                        .then(()=>{
+                            console.log("audio tocado")
+                        })
+                        .catch((erro)=>{
+                            console.log("deu um erro: "+erro)
+                        })
+                    },250)
+                    window.setTimeout(()=>{
+                        controle=false
+                    },250)
+                }
+                
+            })
+
+        </script>
+        <h1 style="position: fixed;">Adam jogos V 1.0</h1>
+        <div id="games"><p class="cell"></p><p class="cell"></p><p class="cell"></p><p class="cell"></p><p class="cell"></p><p class="cell"></p><br>
+            <p class="cell"></p><a href="solarballsgame.html" class="cell"><img src="imgs/CAPA1.png" style="width: 100%;"></img></a><p class="cell"></p><a href="spotifino.html" class="cell"><img src="imgs/CAPA3.png" style="width: 100%;"></img></a><p class="cell"></p><a href="Achealgogame.html" class="cell"><img src="imgs/CAPA2.png" style="width: 100%;"></img></a><br><br><br><br><br><br><br><br><br><br><p class="cell"></p><a href="fugadainstalacao.html" class="cell"><img src="imgs/CAPA4.png" style="width: 100%;"></img></a></div>
+    </body>
+</html>

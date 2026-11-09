@@ -1,0 +1,858 @@
+<html>
+    <head>
+        <Style>
+            #pegueCartas{
+                position: fixed;
+                height: 150px;
+                width: 100px;
+                top:50%;
+                scale: 2;
+                left: 5%;
+            }
+            #inventario{
+                position: fixed;
+                bottom:10%;
+                left: 35%;
+                height: 150px;
+                width: 500px;
+                border: 1px solid blue;
+                border-radius: 20px;
+            }
+            .carta{
+                height: 150px;
+                display:table-cell;
+                width: 100px;
+                overflow: hidden;
+                background-image: url("imgs/Solarcards.png");
+                background-size: 500%;
+            }
+            .oculte{
+                opacity: 0;
+                cursor: grab;
+            }
+            #peguebutton{
+                cursor:grab;
+                background-color: black;
+            }
+            #cartalancada1{
+                position: fixed;
+                bottom:25%;
+                left: 35%;
+                height: 150px;
+                width: 500px;
+                border: 1px solid blue;
+                border-radius: 20px;
+            }
+            #botcartas1{
+                position: fixed;
+                top:0%;
+                left: 35%;
+                height: 150px;
+                width: 500px;
+                scale: 0.76;
+                border: 1px solid blue;
+                border-radius: 20px;
+            }
+            #cartalancada2{
+                position: fixed;
+                bottom:35%;
+                left: 35%;
+                height: 150px;
+                width: 500px;
+                border: 1px solid blue;
+                border-radius: 20px;
+            }
+            #SacrifiqueLuas{
+                position: fixed;
+                height: 75px;
+                width: 150px;
+                top:50%;
+                scale: 2;
+                right: 5%;
+            }
+            #SacrifiquePlanetas{
+                position: fixed;
+                height: 75px;
+                width: 150px;
+                top:20%;
+                scale: 2;
+                right: 5%;
+            }
+            #luapordinheiro{
+                position: fixed;
+                height: 75px;
+                width: 150px;
+                bottom:25%;
+                scale:1.25;
+                right: 5%;
+            }
+            body{
+                background-image: url("imgs/background.png");
+                background-size: 50%;
+            }
+        </Style>
+    </head>
+    <body>
+        <script type="text/javascript">
+            let cartas=["terra","lua","marte","saturno","urano","netuno","jupiter","venus","encelado","mercurio","ganimedes","plutao","io","calisto","europa","haumea","makemake","deimos","fobos","eris","sol","proxima centauri","proteu","rigel kentauros","arqueturo"];
+            let playerCartas=[]
+            let cartaslancadas1=[]
+            let cartaslancadas2=[]
+            let botcartas1=[]
+            let sacrificio1=false
+            let sacrificio2=false
+            let botPrimeirosNomes=["julio","pedro","valentina","enzo","joao","prim34bsolute","eryc","arthur","dezembr0","yuta","master","hmdxkm","solarPr0","mony_star","diva","maju","xxleonxx","cometa","arthurbahia","yuta","amaral","fernandes","shelly","cauazim"]
+            let botSegundosNomes=["2020","2014","31415_tdr","314159_top","224","215","_blox521","_win345","_Pro","072139","08092014","fdbper","_balfa"]
+            let sementeNomeal1=Math.floor(Math.random()*botPrimeirosNomes.length)
+            let sementeNomeal2=Math.floor(Math.random()*botPrimeirosNomes.length)
+            let sementeNomeal3=Math.floor(Math.random()*botSegundosNomes.length)
+            let Botnome=botPrimeirosNomes[sementeNomeal1]+botPrimeirosNomes[sementeNomeal2]+botSegundosNomes[sementeNomeal3]
+            let dinheiro=localStorage.getItem("dinheiro")
+            if (dinheiro==null){
+                localStorage.setItem("dinheiro", 0)
+            }
+            function addCoin(limite){
+                let randomCoins=Math.floor(Math.random()*Number(limite))
+                localStorage.setItem("dinheiro",String(Number(dinheiro)+randomCoins))
+                dinheiro=localStorage.getItem("dinheiro")
+            }
+            function pegue(){
+                document.getElementById("inventario").innerHTML=""
+                let aleatorio=Math.round(Math.random()*cartas.length)
+                if (aleatorio==undefined || aleatorio==null || isNaN(aleatorio)){
+                    aleatorio=cartas.indexOf("encelado")//SE A CARTA DO JOGADOR VIR BUGADA ELE VAI RECEBER UM ENCELADO BEM MAIS OU MENOS COMO PEDIDOS DE DESCULPAS 
+                }
+                playerCartas.push(cartas[aleatorio])// RECEBA SUA CARTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+                if (playerCartas.length>=6){
+                    playerCartas.pop()
+                }
+                render()
+            }
+            function botAiColoqueCartas(){
+                document.getElementById("botcartas1").innerHTML=""
+                let aleatorio=Math.round(Math.random()*cartas.length)
+                document.getElementById("botNick").innerHTML=Botnome
+                if (aleatorio==undefined || aleatorio==null || isNaN(aleatorio)){
+                    aleatorio=cartas.indexOf("encelado")//SE A CARTA DO BOT VIR BUGADA VAI PELO MENOS GANHAR UM ENCELADO COMO DESCULPAS PELA INCOVENIENCIA, O ENCELADO NAO E BOM NEM RUIM
+                }
+                botcartas1.push(cartas[aleatorio])// O BOT VAI BOTAR A CARTAAAAAAAAAAAAAAAAA
+                if (botcartas1.length>=6){
+                    botcartas1.pop()
+                }
+                renderBot1()
+            }
+            window.setInterval(()=>{
+                botAiColoqueCartas()
+            },5000)
+            window.setInterval(()=>{
+                botcartas1.pop()
+                document.getElementById("botcartas1").innerHTML=""
+                renderBot1()
+            },12000)
+            window.setInterval(()=>{
+                botAiColoqueCartas()
+                botFala(botPergunta())
+            },26000)
+            window.setInterval(()=>{
+                botFala(botProvoca())
+            },36000)
+            window.setInterval(()=>{
+                document.getElementById("dinheiroText").innerHTML="$: "+String(dinheiro)
+            },1)
+            function render(){
+                playerCartas.forEach(carta=>{
+                    let cartaNumero=cartas.lastIndexOf(carta)
+                    let horizontal=String((200*cartaNumero)/Math.floor(cartaNumero/5))+"px"
+                    let vertical=String(25*Math.floor(cartaNumero/5))+"%"
+                    if (isNaN((200*cartaNumero)/Math.floor(cartaNumero/5))){
+                        horizontal="0px"
+                    }
+                    if (carta=="terra"){
+                        horizontal="400px"
+                    }
+                    if (carta=="lua"){
+                        horizontal="300px"
+                    }
+                    if (carta=="saturno"){
+                        horizontal="200px"
+                    }
+                    if (carta=="urano"){
+                        horizontal="600px"
+                    }
+                    if (carta=="makemake"){
+                        horizontal="200px"
+                    }
+                    if (carta=="deimos"){
+                        horizontal="1600px"// assim acho bem mais pratico, nao altere isso e uma gambiarra so funciona pq sim nao questione foi puro chute
+                    }
+                    if (carta=="eris"){
+                        horizontal="800px"
+                    }
+                    if(carta=="proxima centauri"){
+                        horizontal="300px"
+                    }
+                    if(carta=="rigel kentauros"){
+                        horizontal="400px"
+                    }
+                    if(carta=="makemake"){
+                        horizontal="-100px"
+                    }
+                    document.getElementById("inventario").innerHTML=document.getElementById("inventario").innerHTML+"<div class='carta' style='background-position:"+horizontal+" "+vertical+";'>"+"<p style='color:white;'>"+carta+"</p>"+"<button style='width:100%;height:100%;'class='oculte'onclick='posAtaque("+'"'+String(carta)+'"'+")'></button>"+"</div>"
+                })
+            }
+             function renderColocar1(){
+                cartaslancadas1.forEach(carta=>{
+                    let cartaNumero=cartas.lastIndexOf(carta)
+                    let horizontal=String((200*cartaNumero)/Math.floor(cartaNumero/5))+"px"
+                    let vertical=String(25*Math.floor(cartaNumero/5))+"%"
+                    if (isNaN((200*cartaNumero)/Math.floor(cartaNumero/5))){
+                        horizontal="0px"
+                    }
+                    if (carta=="terra"){
+                        horizontal="400px"
+                    }
+                    if (carta=="lua"){
+                        horizontal="300px"
+                    }
+                    if (carta=="saturno"){
+                        horizontal="200px"
+                    }
+                    if (carta=="urano"){
+                        horizontal="600px"
+                    }
+                    if (carta=="makemake"){
+                        horizontal="200px"
+                    }
+                    if (carta=="deimos"){
+                        horizontal="1600px"// assim acho bem mais pratico, nao altere isso e uma gambiarra so funciona pq sim nao questione foi puro chute
+                    }
+                    if (carta=="eris"){
+                        horizontal="800px"
+                    }
+                    if(carta=="proxima centauri"){
+                        horizontal="300px"
+                    }
+                    if(carta=="rigel kentauros"){
+                        horizontal="400px"
+                    }
+                    if(carta=="makemake"){
+                        horizontal="-100px"
+                    }
+                    document.getElementById("cartalancada1").innerHTML=document.getElementById("cartalancada1").innerHTML+"<div class='carta' style='background-position:"+horizontal+" "+vertical+";'>"+"<p style='color:white;'>"+carta+"</p>"+"<button style='width:100%;height:100%;'class='oculte'onclick='posDefesa("+'"'+String(carta)+'"'+")'></button>"+"</div>"
+                })
+            }
+             function renderColocar2(){
+                cartaslancadas2.forEach(carta=>{
+                    let cartaNumero=cartas.lastIndexOf(carta)
+                    let horizontal=String((200*cartaNumero)/Math.floor(cartaNumero/5))+"px"
+                    let vertical=String(25*Math.floor(cartaNumero/5))+"%"
+                    if (isNaN((200*cartaNumero)/Math.floor(cartaNumero/5))){
+                        horizontal="0px"
+                    }
+                    if (carta=="terra"){
+                        horizontal="400px"
+                    }
+                    if (carta=="lua"){
+                        horizontal="300px"
+                    }
+                    if (carta=="saturno"){
+                        horizontal="200px"
+                    }
+                    if (carta=="urano"){
+                        horizontal="600px"
+                    }
+                    if (carta=="makemake"){
+                        horizontal="200px"
+                    }
+                    if (carta=="deimos"){
+                        horizontal="1600px"// assim acho bem mais pratico, nao altere isso e uma gambiarra so funciona pq sim nao questione foi puro chute
+                    }
+                    if (carta=="eris"){
+                        horizontal="800px"
+                    }
+                    if(carta=="proxima centauri"){
+                        horizontal="300px"
+                    }
+                    if(carta=="rigel kentauros"){
+                        horizontal="400px"
+                    }
+                    if(carta=="makemake"){
+                        horizontal="-100px"
+                    }
+                    document.getElementById("cartalancada2").innerHTML=document.getElementById("cartalancada2").innerHTML+"<div class='carta' style='background-position:"+horizontal+" "+vertical+";transform:rotate(90deg);'>"+"<p style='color:white;'>"+carta+"</p>"+"<button style='width:100%;height:100%;'class='oculte'onclick='posDefesaToAtaque("+'"'+String(carta)+'"'+")'></button>"+"</div>"
+                })
+            }
+            function renderBot1(){
+                botcartas1.forEach(carta=>{
+                    let cartaNumero=cartas.lastIndexOf(carta)
+                    let horizontal=String((200*cartaNumero)/Math.floor(cartaNumero/5))+"px"
+                    let vertical=String(25*Math.floor(cartaNumero/5))+"%"
+                    if (isNaN((200*cartaNumero)/Math.floor(cartaNumero/5))){
+                        horizontal="0px"
+                    }
+                    if (carta=="terra"){
+                        horizontal="400px"
+                    }
+                    if (carta=="lua"){
+                        horizontal="300px"
+                    }
+                    if (carta=="saturno"){
+                        horizontal="200px"
+                    }
+                    if (carta=="urano"){
+                        horizontal="600px"
+                    }
+                    if (carta=="makemake"){
+                        horizontal="200px"
+                    }
+                    if (carta=="deimos"){
+                        horizontal="1600px"// assim acho bem mais pratico, nao altere isso e uma gambiarra so funciona pq sim nao questione foi puro chute
+                    }
+                    if (carta=="eris"){
+                        horizontal="800px"
+                    }
+                    if(carta=="proxima centauri"){
+                        horizontal="300px"
+                    }
+                    if(carta=="rigel kentauros"){
+                        horizontal="400px"
+                    }
+                    if(carta=="makemake"){
+                        horizontal="-100px"
+                    }
+                    document.getElementById("botcartas1").innerHTML=document.getElementById("botcartas1").innerHTML+"<div class='carta' style='background-position:"+horizontal+" "+vertical+";'>"+"<p style='color:white;'>"+carta+"</p>"+"<button style='width:100%;height:100%;'class='oculte'onclick='AtacarEnemego("+'"'+String(carta)+'"'+")'></button>"+"</div>"
+                })
+            }
+            function verificarPlaneta(carta){
+                if (carta=="mercurio" || carta=="venus"|| carta=="terra"|| carta=="marte"|| carta=="jupiter"|| carta=="saturno"|| carta=="urano"|| carta=="netuno"){
+                    return true
+                }else{
+                    return false
+                }
+            }
+            function verificaEstrela(carta){
+                if (carta=="proxima centauri" || carta=="sol"|| carta=="rigel kentauros"|| carta=="arqueturo"){
+                    return true
+                }else{
+                    return false
+                }
+            }
+            function verificarLua(carta){// GENIALLLLLLLLLLLLLLLLLLLLLLLLLL
+                if (!verificaEstrela(carta) && !verificarPlaneta(carta)){
+                    return true
+                }else{
+                    return false
+                }
+            }
+            function posAtaque(carta){
+                if(verificarPlaneta(carta) && sacrificio1==true){
+                    let cartaAdeletar=playerCartas.lastIndexOf(carta)
+                    playerCartas.splice(cartaAdeletar,1)
+                    document.getElementById("cartalancada1").innerHTML=""
+                    document.getElementById("inventario").innerHTML=""
+                    render()
+                    cartaslancadas1.push(String(carta))
+                    if (cartaslancadas1.length>=6){
+                        cartaslancadas1.pop()// nao adicione um "o" extra no .pop() se nao fica .poop() :p ou alguma coisa com acento
+                    }
+                    renderColocar1()
+                    sacrificio1=false
+                }
+                 if(verificaEstrela(carta) && sacrificio2==true){
+                    let cartaAdeletar=playerCartas.lastIndexOf(carta)
+                    playerCartas.splice(cartaAdeletar,1)
+                    document.getElementById("cartalancada1").innerHTML=""
+                    document.getElementById("inventario").innerHTML=""
+                    render()
+                    cartaslancadas1.push(String(carta))
+                    if (cartaslancadas1.length>=6){
+                        cartaslancadas1.pop()// nao adicione um "o" extra no .pop() se nao fica .poop() :p ou alguma coisa com acento
+                    }
+                    renderColocar1()
+                    sacrificio2=false
+                }
+                if(!verificarPlaneta(carta) && !verificaEstrela(carta)){//necessario
+                    let cartaAdeletar=playerCartas.lastIndexOf(carta)
+                    playerCartas.splice(cartaAdeletar,1)
+                    document.getElementById("cartalancada1").innerHTML=""
+                    document.getElementById("inventario").innerHTML=""
+                    render()
+                    cartaslancadas1.push(String(carta))
+                    if (cartaslancadas1.length>=6){
+                        cartaslancadas1.pop()// cara EU JA DISSE PARA NAO ADICIONAR UM O
+                    }
+                    renderColocar1()
+                }
+            }
+            function posDefesa(carta){
+                    let cartaAdeletar=cartaslancadas1.lastIndexOf(carta)
+                    cartaslancadas1.splice(cartaAdeletar,1)
+                    document.getElementById("cartalancada1").innerHTML=""
+                    renderColocar1()
+                    cartaslancadas2.push(String(carta))
+                    if (cartaslancadas2.length>=6){
+                        cartaslancadas2.pop()// nao adicione um "o" extra no .pop() se nao fica .poop() :p ou alguma coisa com acento
+                    }
+
+                    document.getElementById("cartalancada2").innerHTML=""
+                    renderColocar2()
+            }
+              function posDefesaToAtaque(carta){
+                    let cartaAdeletar=cartaslancadas2.lastIndexOf(carta)
+                    cartaslancadas2.splice(cartaAdeletar,1)
+                    document.getElementById("cartalancada2").innerHTML=""
+                    renderColocar2()
+                    cartaslancadas1.push(String(carta))
+                    if (cartaslancadas1.length>=6){
+                        cartaslancadas1.pop()// nao adicione um "o" extra no .pop() se nao fica .poop() :p ou alguma coisa com acento
+                    }
+
+                    document.getElementById("cartalancada1").innerHTML=""
+                    renderColocar1()
+            }
+            function AtacarEnemego(carta){
+               if (PoderosoParaAtacar(carta)){
+                    let cartaAdeletar=botcartas1.lastIndexOf(carta)
+                    botcartas1.splice(cartaAdeletar,1)//TIRA A CARTA DESSE BOT  
+                    document.getElementById("botcartas1").innerHTML=""
+                    renderBot1()
+                    botFala(botReclema())
+                    addCoin(20)
+               }else{
+                    cartaslancadas1.pop()
+                    document.getElementById("cartalancada1").innerHTML=""
+                    renderColocar1()
+               }
+            }
+            function PoderosoParaAtacar(vitima){
+                let playerRaio=0//O RAIO E A DESTANCIA DO CENTRO A BORDA
+                let botRaio=0
+                let stop1=false
+                let stop2=false
+                vitima=String(vitima).toLowerCase()
+                console.log(vitima)
+                cartaslancadas1.forEach(carta=>{
+                    carta=carta.toLowerCase()
+                    if (stop1==false && carta=="arqueturo"){
+                        playerRaio=17650000
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="rigel kentauros"){
+                        playerRaio=854000
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="sol"){
+                        playerRaio=696340
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="proxima centauri"){
+                        playerRaio=107000
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="jupiter"){
+                        playerRaio=69911
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="saturno"){
+                        playerRaio=58232
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="urano"){
+                        playerRaio=25362
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="netuno"){
+                        playerRaio=24622
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="terra"){
+                        playerRaio=6371
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="venus"){
+                        playerRaio=6052
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="marte"){
+                        playerRaio=3389
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="ganimedes"){
+                        playerRaio=2634
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="mercurio"){
+                        playerRaio=2439
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="calisto"){
+                        playerRaio=2410
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="io"){
+                        playerRaio=1821
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="eris"){
+                        playerRaio=1613
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="europa"){
+                        playerRaio=1560
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="plutao"){
+                        playerRaio=1188
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="makemake"){
+                        playerRaio=715
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="haumea"){
+                        playerRaio=620
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="encelado"){
+                        playerRaio=252
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="proteu"){
+                        playerRaio=210
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="fobos"){
+                        playerRaio=11.2
+                        stop1=true
+                    }
+                    if (stop1==false && carta=="deimos"){
+                        playerRaio=6.2
+                        stop1=true
+                    }
+                })
+                    if (stop2==false && vitima=="arqueturo"){
+                        botRaio=17650000
+                        stop2=true
+                    }
+                    if ( stop2==false && vitima=="rigel kentauros"){
+                        botRaio=854000
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="sol"){
+                       botRaio=696340
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="proxima centauri"){
+                        botRaio=107000
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="jupiter"){
+                       botRaio=69911
+                       stop2=true
+                    }
+                    if (stop2==false&& vitima=="saturno"){
+                       botRaio=58232
+                     stop2=true
+                    }
+                    if (stop2==false&& vitima=="urano"){
+                        botRaio=25362
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="netuno"){
+                       botRaio=24622
+                      stop2=true
+                    }
+                    if (stop2==false && vitima=="terra"){
+                        botRaio=6371
+                      stop2=true
+                    }
+                    if (stop2==false && vitima=="venus"){
+                       botRaio=6052
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="marte"){
+                       botRaio=3389
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="ganimedes"){
+                        botRaio=2634
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="mercurio"){
+                        botRaio=2439
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="calisto"){
+                        botRaio=2410
+                      stop2=true
+                    }
+                    if (stop2==false && vitima=="io"){
+                       botRaio=1821
+                        stop2=true
+                    }
+                    if (stop2==false&& vitima=="eris"){
+                       botRaio=1613
+                      stop2=true
+                    }
+                    if (stop2==false && vitima=="europa"){
+                       botRaio=1560
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="plutao"){
+                       botRaio=1188//O FIM EM 2006
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="makemake"){
+                       botRaio=715
+                        stop2=true
+                    }
+                    if (stop2==false && vitima=="haumea"){
+                        botRaio=620
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="encelado"){
+                        botRaio=252
+                       stop2=true
+                    }
+                    if (stop2==false&& vitima=="proteu"){
+                       botRaio=210
+                        stop2=true
+                    }
+                    if (stop2==false&& vitima=="fobos"){
+                       botRaio=11.2//O IRMAO MAS VELHO DO MINUSCOLO SKSKSKKSKX
+                       stop2=true
+                    }
+                    if (stop2==false && vitima=="deimos"){
+                        botRaio=6.2//MENOR QUE MINHA CIDADE KSKSKSKSKSKSKSKKS
+                       stop2=true
+                    }
+             
+                console.log(playerRaio+" "+botRaio)
+                if (playerRaio>=botRaio){
+                    return true
+                }else{
+                    return false
+                }
+            }   
+            function sacrificarLuas(){
+                let limite=1
+                let luas=0
+                let killluas=0
+                let luareview=0
+                let oldluas=0
+                let viu=0
+                let aleatorio=Math.ceil(Math.random()*3)
+                let audio=new Audio("bgm/audioLua"+aleatorio+".mp3")//AUDIOS LEGAIIIIIIIISSSSSSSSSSSSSSSSSSSSSSSSS
+                 cartaslancadas1.forEach(carta=>{
+                    if (verificarLua(carta)){
+                        luas=luas+1
+                    }
+                 })
+                 cartaslancadas1.forEach(carta=>{
+                    if (verificarLua(carta) && limite<=5 && luas>=3){
+                        limite=limite+1
+                        killluas=killluas+1
+                        let index=cartaslancadas1.lastIndexOf(carta)
+                        cartaslancadas1.splice(index,1)
+                        document.getElementById("cartalancada1").innerHTML=""
+                        renderColocar1()
+                    }
+                 })
+                cartaslancadas1.forEach(carta=>{
+                    if (verificarLua(carta)){
+                        luareview=luareview+1
+                    }
+                 })
+                oldluas=luas-killluas
+                if (!oldluas==luareview){// NAO SEI POR QUE FUNCIONA, MAS ISSO FUNCIONA VEI NAO TIIIIIIIIIIIIRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAOFSDOIDJFHGOKWERGHTERHTER NAO MUDAAAAAAAAAAAAA FUNCIONA PQ SIM 
+                    cartaslancadas1.forEach(carta=>{
+                        if (verificarLua(carta) && viu==0){
+                            viu=1
+                            let index=cartaslancadas1.lastIndexOf(carta)
+                            cartaslancadas1.splice(index,1)
+                            document.getElementById("cartalancada1").innerHTML=""
+                            renderColocar1()
+                        }
+                 })
+                }else{
+                     cartaslancadas1.forEach(carta=>{
+                        if (verificarLua(carta) && viu==0){
+                            viu=1
+                            let index=cartaslancadas1.lastIndexOf(carta)
+                            cartaslancadas1.splice(index,1)
+                            document.getElementById("cartalancada1").innerHTML=""
+                            renderColocar1()
+                        }
+                 })
+                }
+                document.getElementById("cartalancada1").innerHTML=""
+                renderColocar1()
+                 if (limite>=3){
+                    sacrificio1=true
+                    addCoin(50)
+                 }
+                 console.log(sacrificio1)
+                 console.log("oldluas:"+oldluas+" luareview:"+luareview+"killluas: "+killluas+"luas: "+luas)
+                 audio.play()
+            }
+            function sacrificarPlanetas(){
+                let limite=1
+                let luas=0
+                let killluas=0// PREGUICA DE TROCAR NOME DE VARIAAVEELLLLL
+                let luareview=0
+                let oldluas=0
+                let viu=0
+                 cartaslancadas1.forEach(carta=>{
+                    if (verificarPlaneta(carta)){
+                        luas=luas+1
+                    }
+                 })
+                 cartaslancadas1.forEach(carta=>{
+                    if (verificarPlaneta(carta) && limite<=5 && luas>=3){
+                        limite=limite+1
+                        killluas=killluas+1
+                        let index=cartaslancadas1.lastIndexOf(carta)
+                        cartaslancadas1.splice(index,1)
+                        document.getElementById("cartalancada1").innerHTML=""
+                        renderColocar1()
+                    }
+                 })
+                cartaslancadas1.forEach(carta=>{
+                    if (verificarPlaneta(carta)){
+                        luareview=luareview+1
+                    }
+                 })
+                oldluas=luas-killluas
+                if (!oldluas==luareview){// NAO SEI POR QUE FUNCIONA, MAS ISSO FUNCIONA VEI NAO TIIIIIIIIIIIIRRRRRRRRRRRRRAAAAAAAAAAAAAAAAAAAAAAAAOFSDOIDJFHGOKWERGHTERHTER NAO MUDAAAAAAAAAAAAA FUNCIONA PQ SIM 
+                    cartaslancadas1.forEach(carta=>{
+                        if (verificarPlaneta(carta) && viu==0){
+                            viu=1
+                            let index=cartaslancadas1.lastIndexOf(carta)
+                            cartaslancadas1.splice(index,1)
+                            document.getElementById("cartalancada1").innerHTML=""
+                            renderColocar1()
+                        }
+                 })
+                }else{
+                     cartaslancadas1.forEach(carta=>{
+                        if (verificarPlaneta(carta) && viu==0){
+                            viu=1
+                            let index=cartaslancadas1.lastIndexOf(carta)
+                            cartaslancadas1.splice(index,1)
+                            document.getElementById("cartalancada1").innerHTML=""
+                            renderColocar1()
+                        }
+                 })
+                }
+                document.getElementById("cartalancada1").innerHTML=""
+                renderColocar1()
+                 if (limite>=3){
+                    sacrificio2=true
+                    addCoin(100)
+                 }
+                 console.log(sacrificio2)
+                 console.log("oldluas:"+oldluas+" luareview:"+luareview+"killluas: "+killluas+"luas: "+luas)//DEBUGGGGGGGGGGGGGGGGGGGG
+            }
+            function botPergunta(){
+                let mensagemsPrimeiros=["voce","cara, vc", "tu", "mano vc","oh cara vc","mds mano, tu"]
+                let verbos=[" desputou"," conhece"," pegou"," sacrificou"," quase perdeu"," quase ganhou"]
+                let substantivos=[" a carta "," o jogo ", " a carta que mostra o raio e "]
+                let com=["com saturno","com netuno ","com urano ","com a terra ","com venus ","com marte ","com mercurio "]
+                let sementeMessagePergunta1=Math.floor(Math.random()*mensagemsPrimeiros.length)
+                let sementeMessagePergunta2=Math.floor(Math.random()*verbos.length)
+                let sementeMessagePergunta3=Math.floor(Math.random()*substantivos.length)
+                let sementeMessagePergunta4=Math.floor(Math.random()*com.length)
+                let pergunta=mensagemsPrimeiros[sementeMessagePergunta1]+verbos[sementeMessagePergunta2]+substantivos[sementeMessagePergunta3]+com[sementeMessagePergunta4]+"?"
+                return pergunta
+            }
+            function botReclema(){
+                let mensagemsPrimeiros=["voce","cara, vc", "tu", "mano vc","oh cara vc","mds mano, tu"]//BOT NAO ACEITA PERDER
+                let verbos=[" pegou"," destruiu"," fez virar po"," usou hack e pego"," quase perdeu"," quase ganhou"]
+                let substantivos=[" a minha carta "," o meu jogo ", " minha carta rara"]
+                let com=["com maldade"," com seu hack","com brutalidade","com tudo vei. pra que isso","com sua sorte","com sua sorte de n00B","com esforcco nenhum "]
+                let sementeMessagePergunta1=Math.floor(Math.random()*mensagemsPrimeiros.length)
+                let sementeMessagePergunta2=Math.floor(Math.random()*verbos.length)
+                let sementeMessagePergunta3=Math.floor(Math.random()*substantivos.length)
+                let sementeMessagePergunta4=Math.floor(Math.random()*com.length)
+                let pergunta=mensagemsPrimeiros[sementeMessagePergunta1]+verbos[sementeMessagePergunta2]+substantivos[sementeMessagePergunta3]+com[sementeMessagePergunta4]
+                return pergunta
+            }
+            function botProvoca(){
+                let mensagemsPrimeiros=["eu ","faz silencio vei, eu ","plmds mano tu so recua e nem ataca seu runner, eu "," seu runner, eu "]//BOT VEI CHORAO
+                let verbos=["te amasso em 2 segundos","ataca eu vai seu noob","n tenho medo desse seu hack"," elomenos sei escrever","para de recuar seu runner","vou te fz perder vei"]
+                let substantivos=[" com meu combo que eu preparei seu spammer de cartas "," seu spammer, tu joga aleatoriamente mas eu fiz meu combo ", " nao chora criancinha"]
+                let com=["com tudo"," com proposito de te derrotar","com os ataques que te amassa em 2 segundos","com tudo vei. pra que isso","com minhas cartas","com minhas habilidades","com esforcco nenhum "]
+                let sementeMessagePergunta1=Math.floor(Math.random()*mensagemsPrimeiros.length)
+                let sementeMessagePergunta2=Math.floor(Math.random()*verbos.length)
+                let sementeMessagePergunta3=Math.floor(Math.random()*substantivos.length)
+                let sementeMessagePergunta4=Math.floor(Math.random()*com.length)
+                let pergunta=mensagemsPrimeiros[sementeMessagePergunta1]+verbos[sementeMessagePergunta2]+substantivos[sementeMessagePergunta3]+com[sementeMessagePergunta4]
+                return pergunta
+            }
+            function botFala(fala){
+                document.getElementById("botChat").innerHTML=String(fala)
+            }
+            window.setInterval(()=>{
+                let posicao=document.body.style.backgroundPositionX.split("px")[0]//O CEUUUU VAI SE MOVER PQ SIM E E BONITO
+                document.body.style.backgroundPositionX=String(Number(posicao)+2)+"px"
+                if(Number(posicao)>=2000){
+                    document.body.style.backgroundPositionX="0px"
+                }
+            },100)
+            function luapordinheiro(){
+                if (dinheiro>=250){
+                    playerCartas.pop()
+                    playerCartas.push("fobos")
+                    document.getElementById("inventario").innerHTML=""
+                    render()
+                    dinheiro=dinheiro-250
+                }else{
+                    alert('dinheiro insuficiente')
+                }
+            }
+        </script>
+        <div id="pegueCartas">
+            <button onclick="pegue()" id="peguebutton">
+                <img style="width: 100%;height: 100%; " src="imgs/parteDetraz.png">
+
+                </img>
+            </button>
+        </div>
+        <div id="SacrifiqueLuas">
+            <button onclick="sacrificarLuas()" id="peguebutton">
+                <img style="width: 100%;height: 100%; " src="imgs/Sacrificio1Button.png">
+
+                </img>
+            </button>
+        </div>
+        <div id="SacrifiquePlanetas">
+            <button onclick="sacrificarPlanetas()" id="peguebutton">
+                <img style="width: 100%;height: 100%; " src="imgs/Sacrificio2Button.png">
+
+                </img>
+            </button>
+        </div>
+        <div id="inventario">
+
+        </div>
+        <div id="cartalancada1">
+
+        </div>
+        <div id="cartalancada2">
+
+        </div>
+        <div id="botcartas1">
+
+        </div>
+        <div id="luapordinheiro">
+            <button onclick="luapordinheiro()" id="peguebutton">
+                <img style="width: 100%;height: 100%; " src="imgs/luapordinheiro.png">
+
+                </img>
+            </button>
+        </div>
+        <p style="color: blue;position: fixed;top: 0;left: 300px;scale: 2;z-index: 2000;"id="botNick">esperando jogador...</p>
+        <p style="color: blue;position: fixed;top: 50px;left: 100px;scale: 1;z-index: 2000;"id="botChat">:</p>
+        <p style="color: rgb(255, 242, 0);position: fixed;bottom: 50px;left: 100px;scale: 4;z-index: 2000;"id="dinheiroText">$: </p>
+    </body>
+</html>
